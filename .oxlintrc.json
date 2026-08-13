@@ -1,0 +1,37 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "unicorn", "oxc", "import"],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "builtin": true
+  },
+  "options": {
+    "typeAware": true,
+    "typeCheck": true
+  },
+  "rules": {
+    // general rues
+    "no-console": "error",
+
+    // react rules
+    "react/only-export-components": [
+      "warn",
+      {
+        "allowConstantExport": true
+      }
+    ],
+
+    // typescript rules
+    "typescript/explicit-function-return-type": "error",
+
+    // unicorn rules
+    "unicorn/filename-case": "error",
+
+    // oxc rules
+
+    // import rules
+    "import/no-default-export": "error"
+  }
+}
