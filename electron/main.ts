@@ -19,6 +19,9 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
 let window: BrowserWindow | null;
 
 const windowOptions: Partial<BrowserWindowConstructorOptions> = {
+  // A ticker sits in the corner of the screen, so it has no title bar. The
+  // app's own header is the drag handle instead.
+  frame: false,
   minWidth: 400,
   width: 600,
   maxWidth: 800,

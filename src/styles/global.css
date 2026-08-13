@@ -1,1 +1,28 @@
 @import "tailwindcss";
+
+@theme {
+  /* Medium light grey used for all foreground text (`text-primary`). */
+  --color-primary: #b3b3b3;
+}
+
+/* The window is frameless, so regions have to opt in to moving it. */
+@utility drag {
+  -webkit-app-region: drag;
+}
+
+@utility no-drag {
+  -webkit-app-region: no-drag;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background-color: var(--color-black);
+    color: var(--color-primary);
+  }
+}

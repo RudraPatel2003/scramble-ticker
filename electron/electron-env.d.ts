@@ -1,3 +1,4 @@
+// oxlint-disable typescript/consistent-type-definitions
 /// <reference types="vite-plugin-electron/electron-env" />
 
 declare namespace NodeJS {

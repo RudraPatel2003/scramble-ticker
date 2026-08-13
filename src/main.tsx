@@ -2,7 +2,7 @@ import "./styles/global.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { App } from "./components/app/app.tsx";
+import { App } from "./components/app/index.tsx";
 
 const rootElement = document.getElementById("root");
 
