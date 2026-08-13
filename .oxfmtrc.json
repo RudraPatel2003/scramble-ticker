@@ -2,6 +2,7 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "ignorePatterns": [],
   "sortImports": {
+    "newlinesBetween": true,
     "groups": [
       "type-import",
       ["value-builtin", "value-external"],
@@ -11,5 +12,13 @@
       ["value-parent", "value-sibling", "value-index"],
       "unknown"
     ]
+  },
+  "sortTailwindcss": {
+    "stylesheet": "./src/styles/global.css",
+    "functions": ["clsx", "cn"],
+    "preserveWhitespace": true
+  },
+  "sortPackageJson": {
+    "sortScripts": true
   }
 }

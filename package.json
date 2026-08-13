@@ -5,19 +5,21 @@
   "type": "module",
   "main": "dist-electron/main.js",
   "scripts": {
-    "dev": "vite",
     "build": "tsc && vite build && electron-builder",
-    "preview": "vite preview",
-    "lint": "oxlint",
-    "lint:fix": "oxlint --fix",
-    "lint:check": "oxlint --check",
+    "dev": "vite",
     "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "format:fix": "oxfmt --fix",
-    "format:check": "oxfmt --check"
+    "lint": "oxlint",
+    "lint:check": "oxlint --check",
+    "lint:fix": "oxlint --fix",
+    "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.64",

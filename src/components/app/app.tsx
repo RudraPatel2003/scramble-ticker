@@ -2,14 +2,13 @@ import viteLogo from "/electron-vite.animate.svg";
 import { ReactNode, useState } from "react";
 
 import reactLogo from "../../assets/react.svg";
-import "./App.css";
 
 export function App(): ReactNode {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      <div>
+      <div className="flex flex-row gap-4  bg-slate-500 ">
         <a href="https://electron-vite.github.io" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
@@ -28,4 +27,3 @@ export function App(): ReactNode {
     </>
   );
 }
- 
