@@ -20,16 +20,16 @@ let window: BrowserWindow | null;
 
 const windowOptions: Partial<BrowserWindowConstructorOptions> = {
   minWidth: 400,
-  width: 800,
+  width: 600,
   maxWidth: 800,
-  minHeight: 50,
+  minHeight: 100,
   height: 100,
-  maxHeight: 200
+  maxHeight: 200,
 };
 
 function createWindow(): void {
   window = new BrowserWindow({
-    icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
+    icon: path.join(process.env.VITE_PUBLIC, "icon.svg"),
     webPreferences: {
       preload: path.join(__dirname, "preload.mjs"),
     },
