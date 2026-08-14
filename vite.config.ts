@@ -29,4 +29,10 @@ export default defineConfig({
           : {},
     }),
   ],
+  build: {
+    modulePreload: false,
+  },
+  optimizeDeps: {
+    exclude: ["cubing"],
+  },
 });
