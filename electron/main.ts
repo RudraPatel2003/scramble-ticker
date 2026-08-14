@@ -2,7 +2,7 @@ import { BrowserWindow, BrowserWindowConstructorOptions, app, ipcMain } from "el
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { Settings } from "../src/hooks/use-settings";
+import { Screen } from "../src/context/app-context";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -16,6 +16,11 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
   ? path.join(process.env.APP_ROOT, "public")
   : RENDERER_DIST;
 
+const SCREEN_HEIGHTS: Record<Screen, number> = {
+  scramble: 120,
+  settings: 280,
+};
+
 const tickerWindowOptions: Partial<BrowserWindowConstructorOptions> = {
   frame: false,
 
@@ -23,83 +28,41 @@ const tickerWindowOptions: Partial<BrowserWindowConstructorOptions> = {
   width: 600,
   maxWidth: 800,
 
-  minHeight: 120,
-  height: 120,
-  maxHeight: 200,
+  minHeight: SCREEN_HEIGHTS.scramble,
+  height: SCREEN_HEIGHTS.scramble,
+  maxHeight: SCREEN_HEIGHTS.settings,
 };
-
-const settingsWindowOptions: Partial<BrowserWindowConstructorOptions> = {
-  frame: false,
-  resizable: false,
-
-  width: 320,
-  height: 280,
-};
-
-let tickerWindow: BrowserWindow | null = null;
-let settingsWindow: BrowserWindow | null = null;
-
-function preloadPath(): string {
-  return path.join(__dirname, "preload.mjs");
-}
-
-function loadRenderer(target: BrowserWindow, hash: string): void {
-  if (VITE_DEV_SERVER_URL) {
-    void target.loadURL(`${VITE_DEV_SERVER_URL}#${hash}`);
-  } else {
-    void target.loadFile(path.join(RENDERER_DIST, "index.html"), { hash });
-  }
-}
 
 function createTickerWindow(): void {
-  tickerWindow = new BrowserWindow({
+  const tickerWindow = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC, "icon.svg"),
     webPreferences: {
-      preload: preloadPath(),
+      preload: path.join(__dirname, "preload.mjs"),
     },
     ...tickerWindowOptions,
   });
 
-  tickerWindow.on("closed", () => {
-    tickerWindow = null;
-  });
-
-  loadRenderer(tickerWindow, "");
+  if (VITE_DEV_SERVER_URL) {
+    void tickerWindow.loadURL(VITE_DEV_SERVER_URL);
+  } else {
+    void tickerWindow.loadFile(path.join(RENDERER_DIST, "index.html"));
+  }
 }
 
-function createSettingsWindow(): void {
-  if (settingsWindow) {
-    settingsWindow.focus();
+ipcMain.on("window:always-on-top", (event, alwaysOnTop: boolean) => {
+  BrowserWindow.fromWebContents(event.sender)?.setAlwaysOnTop(alwaysOnTop);
+});
 
+ipcMain.on("window:screen", (event, screen: Screen) => {
+  const target = BrowserWindow.fromWebContents(event.sender);
+
+  if (!target) {
     return;
   }
 
-  settingsWindow = new BrowserWindow({
-    webPreferences: {
-      preload: preloadPath(),
-    },
-    ...settingsWindowOptions,
-  });
+  const [width] = target.getSize();
 
-  settingsWindow.on("closed", () => {
-    settingsWindow = null;
-  });
-
-  loadRenderer(settingsWindow, "settings");
-}
-
-ipcMain.on("settings:open", () => {
-  createSettingsWindow();
-});
-
-ipcMain.on("settings:update", (event, settings: Settings) => {
-  tickerWindow?.setAlwaysOnTop(settings.alwaysOnTop === true);
-
-  for (const target of BrowserWindow.getAllWindows()) {
-    if (target.webContents.id !== event.sender.id) {
-      target.webContents.send("settings:changed", settings);
-    }
-  }
+  target.setSize(width, SCREEN_HEIGHTS[screen], true);
 });
 
 ipcMain.on("window:close", (event) => {

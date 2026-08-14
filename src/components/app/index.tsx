@@ -1,19 +1,19 @@
 import { ReactNode } from "react";
 
-import { ScrambleProvider } from "../../context/scramble-provider.tsx";
+import { useAppContext } from "../../context/app-context.ts";
+import { unreachable } from "../../utils/unreachable.ts";
 import { ScrambleTicker } from "../scramble-ticker/index.tsx";
 import { Settings } from "../settings/index.tsx";
 
 export function App(): ReactNode {
-  const isSettingsWindow = window.location.hash === "#settings";
+  const { screen } = useAppContext();
 
-  if (isSettingsWindow) {
-    return <Settings />;
+  switch (screen) {
+    case "settings":
+      return <Settings />;
+    case "scramble":
+      return <ScrambleTicker />;
+    default:
+      unreachable(screen);
   }
-
-  return (
-    <ScrambleProvider>
-      <ScrambleTicker />
-    </ScrambleProvider>
-  );
 }

@@ -3,14 +3,16 @@ import { ReactNode } from "react";
 import { useForm } from "react-hook-form";
 
 import { EVENTS } from "../../constants/events.ts";
+import { useAppContext } from "../../context/app-context.ts";
 import {
   MAXIMUM_INTERVAL_SECONDS,
   MINIMUM_INTERVAL_SECONDS,
   Settings as SettingsValues,
   settingsSchema,
-  useSettings,
 } from "../../hooks/use-settings.ts";
-import { CloseIcon } from "../icons/close-icon.tsx";
+import { Header } from "../header/index.tsx";
+import { IconButton } from "../icon-button/index.tsx";
+import { BackIcon } from "../icons/back-icon.tsx";
 
 const ROW_CLASS_NAME = "flex items-center justify-between gap-4";
 
@@ -24,7 +26,7 @@ const ERROR_CLASS_NAME = "text-xs text-red-400";
 const ACTION_CLASS_NAME = "cursor-pointer rounded-md px-4 py-2 text-xs transition-colors";
 
 export function Settings(): ReactNode {
-  const { settings, updateSettings } = useSettings();
+  const { settings, setScreen, updateSettings } = useAppContext();
 
   const {
     formState: { errors },
@@ -38,22 +40,16 @@ export function Settings(): ReactNode {
   function save(values: SettingsValues): void {
     updateSettings(values);
 
-    window.api.closeWindow();
+    setScreen("scramble");
   }
 
   return (
     <form className="flex h-full flex-col bg-surface" onSubmit={handleSubmit(save)}>
-      <header className="flex items-center justify-between gap-4 px-6 select-none drag">
-        <h1 className="text-xs font-medium tracking-widest text-primary/60 uppercase">Settings</h1>
-
-        <button
-          className="cursor-pointer rounded-md p-2 text-primary transition-colors no-drag hover:bg-white/10 hover:text-emphasis"
-          onClick={() => window.api.closeWindow()}
-          type="button"
-        >
-          <CloseIcon className="size-4" />
-        </button>
-      </header>
+      <Header title="Settings">
+        <IconButton onClick={() => setScreen("scramble")}>
+          <BackIcon className="size-4" />
+        </IconButton>
+      </Header>
 
       <div className="flex grow flex-col gap-4 px-6 pb-4">
         <label className={ROW_CLASS_NAME}>
@@ -103,7 +99,7 @@ export function Settings(): ReactNode {
         <div className="mt-auto flex justify-end gap-2">
           <button
             className={`${ACTION_CLASS_NAME} text-primary hover:bg-white/10 hover:text-emphasis`}
-            onClick={() => window.api.closeWindow()}
+            onClick={() => setScreen("scramble")}
             type="button"
           >
             Cancel

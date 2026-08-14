@@ -1,29 +1,17 @@
-import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 
-import { Settings } from "../src/hooks/use-settings";
+import { Screen } from "../src/context/app-context";
 
 contextBridge.exposeInMainWorld("api", {
-  openSettings(): void {
-    ipcRenderer.send("settings:open");
-  },
-
   closeWindow(): void {
     ipcRenderer.send("window:close");
   },
 
-  updateSettings(settings: Settings): void {
-    ipcRenderer.send("settings:update", settings);
+  setAlwaysOnTop(alwaysOnTop: boolean): void {
+    ipcRenderer.send("window:always-on-top", alwaysOnTop);
   },
 
-  onSettingsChanged(listener: (settings: Settings) => void): () => void {
-    const handler = (_event: IpcRendererEvent, settings: Settings): void => {
-      listener(settings);
-    };
-
-    ipcRenderer.on("settings:changed", handler);
-
-    return (): void => {
-      ipcRenderer.off("settings:changed", handler);
-    };
+  setScreen(screen: Screen): void {
+    ipcRenderer.send("window:screen", screen);
   },
 });

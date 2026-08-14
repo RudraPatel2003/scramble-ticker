@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
 
-import { useScrambleContext } from "../../context/scramble-context.ts";
+import { useAppContext } from "../../context/app-context.ts";
 
 export function Scramble(): ReactNode {
-  const { scramble } = useScrambleContext();
+  const { scramble } = useAppContext();
 
   return (
     <p

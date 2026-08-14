@@ -65,26 +65,12 @@ export function useSettings(): SettingsContext {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
-    window.api.updateSettings(updated);
-
     setSettings(updated);
   }
 
   useEffect(() => {
-    window.api.updateSettings(readStoredSettings());
-  }, []);
-
-  useEffect(() => {
-    return window.api.onSettingsChanged((incoming) => {
-      const parsed = settingsSchema.safeParse(incoming);
-
-      if (!parsed.success) {
-        return;
-      }
-
-      setSettings(parsed.data);
-    });
-  }, []);
+    window.api.setAlwaysOnTop(settings.alwaysOnTop);
+  }, [settings.alwaysOnTop]);
 
   return { settings, updateSettings };
 }

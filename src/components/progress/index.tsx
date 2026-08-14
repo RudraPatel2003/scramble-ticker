@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
 
-import { useScrambleContext } from "../../context/scramble-context.ts";
+import { useAppContext } from "../../context/app-context.ts";
 
 export function Progress(): ReactNode {
-  const { progress } = useScrambleContext();
+  const { progress } = useAppContext();
 
   return (
     <div className="absolute inset-x-0 bottom-0 h-px bg-white/10">
