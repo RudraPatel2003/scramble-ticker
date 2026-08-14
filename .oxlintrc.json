@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": ["src/components/ui/**", "src/lib/**"],
   "plugins": ["react", "typescript", "unicorn", "oxc", "import"],
   "categories": {
     "correctness": "error"
