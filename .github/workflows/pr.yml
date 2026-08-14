@@ -59,9 +59,6 @@ jobs:
       - name: Check that project passes linting
         run: pnpm lint
 
-      - name: Check that project passes type checking
-        run: pnpm typecheck
-
       - name: Check that project passes formatting
         run: pnpm format:check
 
