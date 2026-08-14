@@ -16,6 +16,8 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
   ? path.join(process.env.APP_ROOT, "public")
   : RENDERER_DIST;
 
+const SURFACE_COLOR = "#0b0b0c";
+
 const SCREEN_HEIGHTS: Record<Screen, number> = {
   scramble: 120,
   settings: 280,
@@ -23,6 +25,7 @@ const SCREEN_HEIGHTS: Record<Screen, number> = {
 
 const tickerWindowOptions: Partial<BrowserWindowConstructorOptions> = {
   frame: false,
+  backgroundColor: SURFACE_COLOR,
 
   minWidth: 400,
   width: 600,
@@ -62,7 +65,7 @@ ipcMain.on("window:screen", (event, screen: Screen) => {
 
   const [width] = target.getSize();
 
-  target.setSize(width, SCREEN_HEIGHTS[screen], true);
+  target.setSize(width, SCREEN_HEIGHTS[screen]);
 });
 
 ipcMain.on("window:close", (event) => {
