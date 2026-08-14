@@ -1,0 +1,19 @@
+export const EVENTS = {
+  "2x2": "222",
+  "3x3": "333",
+  "4x4": "444",
+  "5x5": "555",
+  "6x6": "666",
+  "7x7": "777",
+  "3x3 One-Handed": "333oh",
+  "3x3 Blindfolded": "333bf",
+  "4x4 Blindfolded": "444bf",
+  "5x5 Blindfolded": "555bf",
+  Clock: "clock",
+  Megaminx: "minx",
+  Pyraminx: "pyram",
+  Skewb: "skewb",
+  "Square-1": "sq1",
+} as const;
+
+export const EVENT_IDS = Object.values(EVENTS);

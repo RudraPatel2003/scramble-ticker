@@ -1,30 +1,59 @@
-# React + TypeScript + Vite
+<h1 align="center">
+  <br>
+  <img src="./assets/repository-banner.png" />
+  <br>
+  Scramble Ticker
+  <br>
+</h1>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Description
 
-Currently, two official plugins are available:
+A desktop app to generate WCA scrambles without input.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Fidgeting with your cubes while in a meeting? Hand scramble no longer!
 
-## Expanding the ESLint configuration
+## Usage
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Run the app with `pnpm dev` or use `pnpm build` and install the production version locally.
 
-- Configure the top-level `parserOptions` property like this:
+Manage settings like what event you are doing, how fast it refreshes, and whether the window is always on top.
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+Will this be distributed as a standalone app? Not unless I want to buy an Apple Developer license...
+
+## Local Development
+
+Install the dependencies:
+
+```sh
+pnpm install
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+Start the development server:
+
+```sh
+pnpm dev
+```
+
+Run the linter
+
+```sh
+pnpm lint
+```
+
+Run the formatter
+
+```sh
+pnpm format
+```
+
+Run the type checker
+
+```sh
+pnpm typecheck
+```
+
+Build the production app:
+
+```sh
+pnpm build
+```

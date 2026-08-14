@@ -1,68 +1,87 @@
-import { app, BrowserWindow } from 'electron'
-import { createRequire } from 'node:module'
-import { fileURLToPath } from 'node:url'
-import path from 'node:path'
+import { BrowserWindow, BrowserWindowConstructorOptions, app, ipcMain } from "electron";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const require = createRequire(import.meta.url)
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+import { Screen } from "../src/context/app-context";
 
-// The built directory structure
-//
-// ├─┬─┬ dist
-// │ │ └── index.html
-// │ │
-// │ ├─┬ dist-electron
-// │ │ ├── main.js
-// │ │ └── preload.mjs
-// │
-process.env.APP_ROOT = path.join(__dirname, '..')
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
-export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
-export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
-export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
+process.env.APP_ROOT = path.join(__dirname, "..");
 
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
+export const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
+export const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
+export const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
 
-let win: BrowserWindow | null
+process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
+  ? path.join(process.env.APP_ROOT, "public")
+  : RENDERER_DIST;
 
-function createWindow() {
-  win = new BrowserWindow({
-    icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+const SURFACE_COLOR = "#0b0b0c";
+
+const SCREEN_HEIGHTS: Record<Screen, number> = {
+  scramble: 120,
+  settings: 280,
+};
+
+const tickerWindowOptions: Partial<BrowserWindowConstructorOptions> = {
+  frame: false,
+  backgroundColor: SURFACE_COLOR,
+
+  minWidth: 400,
+  width: 600,
+  maxWidth: 800,
+
+  minHeight: SCREEN_HEIGHTS.scramble,
+  height: SCREEN_HEIGHTS.scramble,
+  maxHeight: SCREEN_HEIGHTS.settings,
+};
+
+function createTickerWindow(): void {
+  const tickerWindow = new BrowserWindow({
+    icon: path.join(process.env.VITE_PUBLIC, "icon.svg"),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.mjs'),
+      preload: path.join(__dirname, "preload.mjs"),
     },
-  })
-
-  // Test active push message to Renderer-process.
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', (new Date).toLocaleString())
-  })
+    ...tickerWindowOptions,
+  });
 
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL)
+    void tickerWindow.loadURL(VITE_DEV_SERVER_URL);
   } else {
-    // win.loadFile('dist/index.html')
-    win.loadFile(path.join(RENDERER_DIST, 'index.html'))
+    void tickerWindow.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
 }
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-    win = null
-  }
-})
+ipcMain.on("window:always-on-top", (event, alwaysOnTop: boolean) => {
+  BrowserWindow.fromWebContents(event.sender)?.setAlwaysOnTop(alwaysOnTop);
+});
 
-app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
+ipcMain.on("window:screen", (event, screen: Screen) => {
+  const target = BrowserWindow.fromWebContents(event.sender);
+
+  if (!target) {
+    return;
+  }
+
+  const [width] = target.getSize();
+
+  target.setSize(width, SCREEN_HEIGHTS[screen]);
+});
+
+ipcMain.on("window:close", (event) => {
+  BrowserWindow.fromWebContents(event.sender)?.close();
+});
+
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
+
+app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
+    createTickerWindow();
   }
-})
+});
 
-app.whenReady().then(createWindow)
+void app.whenReady().then(createTickerWindow);
