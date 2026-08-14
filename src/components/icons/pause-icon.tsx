@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { IconProps } from "./icon-properties.ts";
+import { IconProps } from "./icon-props.ts";
 
 export function PauseIcon({ className }: IconProps): ReactNode {
   return (

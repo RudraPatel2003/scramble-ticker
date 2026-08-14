@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { IconProps } from "./icon-properties.ts";
+import { IconProps } from "./icon-props.ts";
 
 export function SettingsIcon({ className }: IconProps): ReactNode {
   return (

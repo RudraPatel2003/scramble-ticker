@@ -1,28 +1,22 @@
 // oxlint-disable typescript/consistent-type-definitions
 /// <reference types="vite-plugin-electron/electron-env" />
 
-declare namespace NodeJS {
-  interface ProcessEnv {
-    /**
-     * The built directory structure
-     *
-     * ```tree
-     * ├─┬─┬ dist
-     * │ │ └── index.html
-     * │ │
-     * │ ├─┬ dist-electron
-     * │ │ ├── main.js
-     * │ │ └── preload.js
-     * │
-     * ```
-     */
-    APP_ROOT: string;
-    /** /dist/ or /public/ */
-    VITE_PUBLIC: string;
-  }
-}
+import { Settings } from "../src/hooks/use-settings.ts";
 
-// Used in Renderer process, expose in `preload.ts`
-interface Window {
-  ipcRenderer: import("electron").IpcRenderer;
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      APP_ROOT: string;
+      VITE_PUBLIC: string;
+    }
+  }
+
+  interface Window {
+    api: {
+      openSettings: () => void;
+      closeWindow: () => void;
+      updateSettings: (settings: Settings) => void;
+      onSettingsChanged: (listener: (settings: unknown) => void) => () => void;
+    };
+  }
 }

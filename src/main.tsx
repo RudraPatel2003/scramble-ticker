@@ -17,9 +17,3 @@ reactRoot.render(
     <App />
   </React.StrictMode>,
 );
-
-// Use contextBridge
-window.ipcRenderer.on("main-process-message", (_event, message) => {
-  // eslint-disable-next-line no-console
-  console.log(message);
-});

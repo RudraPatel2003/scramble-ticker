@@ -1,5 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "tags": ["-lintignore"],
-  "ignore": ["electron/main.ts", "electron/preload.ts"]
+  "ignore": ["electron/main.ts", "electron/preload.ts"],
+  "ignoreDependencies": ["electron"]
 }

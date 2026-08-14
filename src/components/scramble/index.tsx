@@ -1,12 +1,16 @@
 import { ReactNode } from "react";
 
-type ScrambleProps = {
-  scramble: string | null;
-};
+import { useScrambleContext } from "../../context/scramble-context.ts";
 
-export function Scramble({ scramble }: ScrambleProps): ReactNode {
+export function Scramble(): ReactNode {
+  const { scramble } = useScrambleContext();
+
   return (
-    <p className="text-center font-mono text-sm text-balance text-primary">
+    <p
+      className={`text-center font-mono text-base leading-relaxed tracking-wide text-balance ${
+        scramble ? "text-emphasis" : "text-primary/50 italic"
+      }`}
+    >
       {scramble ?? "Generating scramble…"}
     </p>
   );
