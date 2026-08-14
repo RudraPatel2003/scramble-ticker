@@ -18,6 +18,8 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
 
 const SURFACE_COLOR = "#0b0b0c";
 
+const DEVELOPMENT_ICON = path.join(process.env.APP_ROOT, "build", "icon.png");
+
 const SCREEN_HEIGHTS: Record<Screen, number> = {
   scramble: 120,
   settings: 280,
@@ -84,4 +86,10 @@ app.on("activate", () => {
   }
 });
 
-void app.whenReady().then(createTickerWindow);
+void app.whenReady().then(() => {
+  if (VITE_DEV_SERVER_URL && process.platform === "darwin") {
+    app.dock?.setIcon(DEVELOPMENT_ICON);
+  }
+
+  createTickerWindow();
+});

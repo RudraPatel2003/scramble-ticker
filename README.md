@@ -14,7 +14,7 @@ Fidgeting with your cubes while in a meeting? Hand scramble no longer!
 
 ## Usage
 
-Run the app with `pnpm dev` or use `pnpm build` and install the production version locally.
+Run the app with `pnpm dev` or use `pnpm bundle` and install the production version locally.
 
 Manage settings like what event you are doing, how fast it refreshes, and whether the window is always on top.
 
