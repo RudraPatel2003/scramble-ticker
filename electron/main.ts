@@ -1,29 +1,31 @@
-import { BrowserWindow, BrowserWindowConstructorOptions, app, ipcMain } from "electron";
+import { BrowserWindow, BrowserWindowConstructorOptions, app, ipcMain, screen } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { Screen } from "../src/context/app-context";
+import { DEFAULT_SETTINGS, settingsSchema } from "../src/types/settings.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 process.env.APP_ROOT = path.join(__dirname, "..");
 
 export const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
-export const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
   ? path.join(process.env.APP_ROOT, "public")
   : RENDERER_DIST;
 
-const SURFACE_COLOR = "#0b0b0c";
+const SURFACE_COLOR = "#212121";
 
 const DEVELOPMENT_ICON = path.join(process.env.APP_ROOT, "build", "icon.png");
 
-const SCREEN_HEIGHTS: Record<Screen, number> = {
-  scramble: 120,
-  settings: 280,
-};
+const TICKER_SCREEN = "src/screens/index.html";
+const SETTINGS_SCREEN = "src/screens/settings.html";
+
+const TICKER_WINDOW_HEIGHT = 160;
+
+const SETTINGS_WINDOW_WIDTH = 440;
+const SETTINGS_WINDOW_HEIGHT = 456;
 
 const tickerWindowOptions: Partial<BrowserWindowConstructorOptions> = {
   frame: false,
@@ -33,41 +35,110 @@ const tickerWindowOptions: Partial<BrowserWindowConstructorOptions> = {
   width: 600,
   maxWidth: 800,
 
-  minHeight: SCREEN_HEIGHTS.scramble,
-  height: SCREEN_HEIGHTS.scramble,
-  maxHeight: SCREEN_HEIGHTS.settings,
+  minHeight: TICKER_WINDOW_HEIGHT,
+  height: TICKER_WINDOW_HEIGHT,
+  maxHeight: TICKER_WINDOW_HEIGHT,
 };
 
+const settingsWindowOptions: Partial<BrowserWindowConstructorOptions> = {
+  title: "Settings",
+  backgroundColor: SURFACE_COLOR,
+  resizable: false,
+  minimizable: false,
+  maximizable: false,
+  fullscreenable: false,
+
+  width: SETTINGS_WINDOW_WIDTH,
+  height: SETTINGS_WINDOW_HEIGHT,
+};
+
+let tickerWindow: BrowserWindow | undefined = undefined;
+let settingsWindow: BrowserWindow | undefined = undefined;
+
+function loadRenderer(window: BrowserWindow, htmlFileName: string): void {
+  if (VITE_DEV_SERVER_URL) {
+    void window.loadURL(new URL(htmlFileName, VITE_DEV_SERVER_URL).href);
+    return;
+  }
+
+  void window.loadFile(path.join(RENDERER_DIST, htmlFileName));
+}
+
 function createTickerWindow(): void {
-  const tickerWindow = new BrowserWindow({
+  tickerWindow = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC, "icon.svg"),
     webPreferences: {
       preload: path.join(__dirname, "preload.mjs"),
     },
+    alwaysOnTop: DEFAULT_SETTINGS.alwaysOnTop,
     ...tickerWindowOptions,
   });
 
-  if (VITE_DEV_SERVER_URL) {
-    void tickerWindow.loadURL(VITE_DEV_SERVER_URL);
-  } else {
-    void tickerWindow.loadFile(path.join(RENDERER_DIST, "index.html"));
-  }
+  tickerWindow.on("closed", () => {
+    tickerWindow = undefined;
+  });
+
+  loadRenderer(tickerWindow, TICKER_SCREEN);
 }
 
-ipcMain.on("window:always-on-top", (event, alwaysOnTop: boolean) => {
-  BrowserWindow.fromWebContents(event.sender)?.setAlwaysOnTop(alwaysOnTop);
-});
+function getSettingsWindowPosition(): { x: number; y: number } | undefined {
+  if (!tickerWindow) {
+    return undefined;
+  }
 
-ipcMain.on("window:screen", (event, screen: Screen) => {
-  const target = BrowserWindow.fromWebContents(event.sender);
+  const { workArea } = screen.getDisplayMatching(tickerWindow.getBounds());
 
-  if (!target) {
+  return {
+    x: Math.round(workArea.x + (workArea.width - SETTINGS_WINDOW_WIDTH) / 2),
+    y: Math.round(workArea.y + (workArea.height - SETTINGS_WINDOW_HEIGHT) / 2),
+  };
+}
+
+function createSettingsWindow(): void {
+  if (settingsWindow) {
+    settingsWindow.show();
+    settingsWindow.focus();
     return;
   }
 
-  const [width] = target.getSize();
+  settingsWindow = new BrowserWindow({
+    icon: path.join(process.env.VITE_PUBLIC, "icon.svg"),
+    webPreferences: {
+      preload: path.join(__dirname, "preload.mjs"),
+    },
+    ...settingsWindowOptions,
+    ...getSettingsWindowPosition(),
+  });
 
-  target.setSize(width, SCREEN_HEIGHTS[screen]);
+  settingsWindow.on("closed", () => {
+    settingsWindow = undefined;
+  });
+
+  loadRenderer(settingsWindow, SETTINGS_SCREEN);
+}
+
+ipcMain.on("settings:open", () => {
+  createSettingsWindow();
+});
+
+ipcMain.on("settings:apply", (event, settings: unknown) => {
+  const result = settingsSchema.safeParse(settings);
+
+  if (!result.success) {
+    return;
+  }
+
+  tickerWindow?.setAlwaysOnTop(result.data.alwaysOnTop);
+
+  for (const window of BrowserWindow.getAllWindows()) {
+    if (window.webContents.id !== event.sender.id) {
+      window.webContents.send("settings:changed", result.data);
+    }
+  }
+});
+
+ipcMain.on("settings:close", () => {
+  settingsWindow?.close();
 });
 
 ipcMain.on("window:close", (event) => {
@@ -81,9 +152,12 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
+  if (!tickerWindow) {
     createTickerWindow();
+    return;
   }
+
+  tickerWindow.show();
 });
 
 void app.whenReady().then(() => {

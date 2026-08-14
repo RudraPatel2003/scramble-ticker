@@ -1,36 +1,33 @@
+import { PauseIcon, PlayIcon, SettingsIcon, SkipForwardIcon } from "lucide-react";
 import { ReactNode } from "react";
 
 import { useAppContext } from "../../context/app-context.ts";
-import { IconButton } from "../icon-button/index.tsx";
-import { NextIcon } from "../icons/next-icon.tsx";
-import { PauseIcon } from "../icons/pause-icon.tsx";
-import { PlayIcon } from "../icons/play-icon.tsx";
-import { SettingsIcon } from "../icons/settings-icon.tsx";
+import { Button } from "../ui/button.tsx";
 
 function formatCountdown(millisecondsRemaining: number): string {
   return `${Math.ceil(millisecondsRemaining / 1000)}s`;
 }
 
 export function Controls(): ReactNode {
-  const { isPlaying, millisecondsRemaining, next, setScreen, toggle } = useAppContext();
+  const { isPlaying, millisecondsRemaining, next, toggle } = useAppContext();
 
   return (
     <>
-      <span className="w-8 text-right font-mono text-xs text-primary/70 tabular-nums">
+      <span className="w-8 text-right font-mono text-xs text-muted-foreground tabular-nums">
         {formatCountdown(millisecondsRemaining)}
       </span>
 
-      <IconButton onClick={toggle}>
-        {isPlaying ? <PauseIcon className="size-4" /> : <PlayIcon className="size-4" />}
-      </IconButton>
+      <Button onClick={toggle} size="icon-sm" variant="ghost">
+        {isPlaying ? <PauseIcon /> : <PlayIcon />}
+      </Button>
 
-      <IconButton onClick={next}>
-        <NextIcon className="size-4" />
-      </IconButton>
+      <Button onClick={next} size="icon-sm" variant="ghost">
+        <SkipForwardIcon />
+      </Button>
 
-      <IconButton onClick={() => setScreen("settings")}>
-        <SettingsIcon className="size-4" />
-      </IconButton>
+      <Button onClick={() => window.api.openSettings()} size="icon-sm" variant="ghost">
+        <SettingsIcon />
+      </Button>
     </>
   );
 }

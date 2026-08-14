@@ -1,17 +1,14 @@
 import { createContext, useContext } from "react";
 
 import { ScrambleTickerContext } from "../hooks/use-scramble.ts";
-import { SettingsContext } from "../hooks/use-settings.ts";
+import { Settings } from "../types/settings.ts";
 
-export type Screen = "scramble" | "settings";
+type AppContextValue = ScrambleTickerContext & {
+  settings: Settings;
+  updateSettings: (settings: Settings) => void;
+};
 
-export type AppContextValue = ScrambleTickerContext &
-  SettingsContext & {
-    screen: Screen;
-    setScreen: (screen: Screen) => void;
-  };
-
-export const AppContext = createContext<AppContextValue | null>(null);
+export const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 export function useAppContext(): AppContextValue {
   const value = useContext(AppContext);

@@ -1,9 +1,9 @@
-import "./styles/global.css";
+import "../styles/global.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { App } from "./components/app/index.tsx";
-import { AppProvider } from "./context/app-provider.tsx";
+import { ScrambleTicker } from "../components/scramble-ticker/index.tsx";
+import { AppProvider } from "../providers/app-provider.tsx";
 
 const rootElement = document.getElementById("root");
 
@@ -16,7 +16,7 @@ const reactRoot = ReactDOM.createRoot(rootElement);
 reactRoot.render(
   <React.StrictMode>
     <AppProvider>
-      <App />
+      <ScrambleTicker />
     </AppProvider>
   </React.StrictMode>,
 );

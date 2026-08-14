@@ -6,6 +6,11 @@ import electron from "vite-plugin-electron/simple";
 
 // oxlint-disable-next-line import/no-default-export
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": path.join(import.meta.dirname, "src"),
+    },
+  },
   plugins: [
     tailwindcss(),
     react(),
@@ -31,6 +36,12 @@ export default defineConfig({
   ],
   build: {
     modulePreload: false,
+    rolldownOptions: {
+      input: {
+        index: path.join(import.meta.dirname, "src/screens/index.html"),
+        settings: path.join(import.meta.dirname, "src/screens/settings.html"),
+      },
+    },
   },
   optimizeDeps: {
     exclude: ["cubing"],

@@ -1,7 +1,10 @@
 // oxlint-disable typescript/consistent-type-definitions
 /// <reference types="vite-plugin-electron/electron-env" />
 
-import { Screen } from "../src/context/app-context.ts";
+import { Settings } from "../src/types/settings.ts";
+
+type OnSettingsChangeCallback = (settings: Settings) => void;
+type OnSettingsChangeCleanup = () => void;
 
 declare global {
   namespace NodeJS {
@@ -14,8 +17,12 @@ declare global {
   interface Window {
     api: {
       closeWindow: () => void;
-      setAlwaysOnTop: (alwaysOnTop: boolean) => void;
-      setScreen: (screen: Screen) => void;
+
+      openSettings: () => void;
+      closeSettings: () => void;
+
+      applySettings: (settings: Settings) => void;
+      onSettingsChange: (callback: OnSettingsChangeCallback) => OnSettingsChangeCleanup;
     };
   }
 }
