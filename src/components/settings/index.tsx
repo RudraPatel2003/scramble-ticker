@@ -61,7 +61,7 @@ export function Settings(): ReactNode {
                   <SelectValue />
                 </SelectTrigger>
 
-                <SelectContent>
+                <SelectContent position="popper">
                   {Object.entries(EVENTS).map(([name, id]) => (
                     <SelectItem key={id} value={id}>
                       {name}
@@ -137,7 +137,7 @@ export function Settings(): ReactNode {
           type="button"
           variant="secondary"
         >
-          Cancel
+          Close
         </Button>
 
         <Button disabled={!isDirty} size="lg" type="submit">
